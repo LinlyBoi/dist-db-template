@@ -39,7 +39,7 @@ services:
     restart: "no"
 
   haproxy:
-    image: haproxy:2.9
+    image: haproxy:3.4
     ports:
       - "26257:26257"   # apps connect here
       - "8404:8404"     # HAProxy stats page
