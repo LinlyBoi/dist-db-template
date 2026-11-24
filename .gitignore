@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+
+# Results and logs from load tests (remove these lines if you want to commit results)
+loadtest/results/
+*.log
+*.csv
+
+# Local database data (if anyone mounts a host folder instead of Docker volumes)
+cockroach-data/
+node1/
+node2/
+node3/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

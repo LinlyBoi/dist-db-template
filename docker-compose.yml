@@ -1,0 +1,56 @@
+services:
+  roach1:
+    image: cockroachdb/cockroach:v23.1.28
+    hostname: roach1
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach1
+    ports:
+      - "26258:26257"   # direct SQL access to this node (debugging)
+      - "8080:8080"     # admin UI
+    volumes:
+      - roach1-data:/cockroach/cockroach-data
+
+  roach2:
+    image: cockroachdb/cockroach:v23.1.28
+    hostname: roach2
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach2
+    ports:
+      - "26259:26257"
+      - "8081:8080"
+    volumes:
+      - roach2-data:/cockroach/cockroach-data
+
+  roach3:
+    image: cockroachdb/cockroach:v23.1.28
+    hostname: roach3
+    command: start --insecure --join=roach1,roach2,roach3 --advertise-addr=roach3
+    ports:
+      - "26260:26257"
+      - "8082:8080"
+    volumes:
+      - roach3-data:/cockroach/cockroach-data
+
+  init:
+    image: cockroachdb/cockroach:v23.1.28
+    command: init --insecure --host=roach1
+    depends_on:
+      - roach1
+      - roach2
+      - roach3
+    restart: "no"
+
+  haproxy:
+    image: haproxy:2.9
+    ports:
+      - "26257:26257"   # apps connect here
+      - "8404:8404"     # HAProxy stats page
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - roach1
+      - roach2
+      - roach3
+
+volumes:
+  roach1-data:
+  roach2-data:
+  roach3-data:
